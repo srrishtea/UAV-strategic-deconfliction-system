@@ -122,10 +122,20 @@ dmypy.json
 Thumbs.db
 
 # Project specific
+# Data and temporary files
 data/output/*
 !data/output/.gitkeep
+
+# Temporary animation files (but allow showcase demos)
 *.png
 *.jpg
 *.gif
+
+# Allow showcase animations
+!src/animations/demos/showcase/*.gif
+!src/animations/demos/showcase/*.png
+!src/animations/demos/showcase_3d/*.gif
+!src/animations/demos/showcase_3d/*.png
+
 logs/
 temp/

@@ -42,7 +42,7 @@ This is a **complete, production-ready UAV Strategic Deconfliction System** buil
 
 ### 🏗️ System Architecture
 
-```
+\`\`\`
 uav-deconfliction-system/
 ├── src/
 │   ├── uav/               # UAV classes and fleet management
@@ -59,33 +59,33 @@ uav-deconfliction-system/
 │   ├── lightweight_demo.py     # Memory-optimized demo
 │   ├── advanced_test_suite.py  # Comprehensive testing
 │   └── real_world_demo.py      # Practical applications
-```
+\`\`\`
 
 ### 🚀 Quick Start Guide
 
 #### For FlytBase Evaluators (Beginner-Friendly):
 
 1. **Setup Environment**:
-   ```bash
+   \`\`\`bash
    cd uav-deconfliction-system
    pip install -r requirements.txt
-   ```
+   \`\`\`
 
 2. **Run Basic Demo** (Recommended for 8GB RAM):
-   ```bash
+   \`\`\`bash
    cd src
    python lightweight_demo.py
-   ```
+   \`\`\`
 
 3. **Run Advanced Tests** (Show impressive capabilities):
-   ```bash
+   \`\`\`bash
    python advanced_test_suite.py
-   ```
+   \`\`\`
 
 4. **Run Real-World Scenarios** (Practical applications):
-   ```bash
+   \`\`\`bash
    python real_world_demo.py
-   ```
+   \`\`\`
 
 ### 💡 What Makes This Solution Special
 

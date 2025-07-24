@@ -16,18 +16,18 @@ A comprehensive UAV (Unmanned Aerial Vehicle) deconfliction system that provides
 ## Installation
 
 1. Clone the repository:
-\`\`\`bash
-git clone <repository-url>
-cd UAV-Deconfliction-System
-\`\`\`
+```bash
+git clone https://github.com/srrishtea/UAV-strategic-deconfliction-system.git
+cd UAV-strategic-deconfliction-system
+```
 
 2. Install dependencies:
-\`\`\`bash
+```bash
 pip install -r requirements.txt
-\`\`\`
+```
 
 3. For MP4 export (optional):
-\`\`\`bash
+```bash
 # Install ffmpeg for MP4 animation export
 # On Ubuntu/Debian:
 sudo apt-get install ffmpeg
@@ -37,41 +37,58 @@ brew install ffmpeg
 
 # On Windows:
 # Download from https://ffmpeg.org/download.html
-\`\`\`
+```
 
 ## Quick Start
 
 ### Basic Demo with Animation Export
-\`\`\`bash
+```bash
 cd src
 python main.py --duration 60 --view 2d
-\`\`\`
+```
 
-### Generate Multiple Demonstration Scenarios
-\`\`\`bash
+### Lightweight Demo (Memory Efficient)
+```bash
 cd src
-python main.py --mode scenarios
-\`\`\`
+python lightweight_demo.py
+```
 
 ### High-Quality Animation Demo
-\`\`\`bash
+```bash
 cd src
 python animation_demo.py
-\`\`\`
+```
 
-### Batch Analysis with Animations
-\`\`\`bash
+### Real-World Scenarios Demo
+```bash
 cd src
-python main.py --mode batch --view multi
-\`\`\`
+python real_world_demo.py
+```
 
-## Command Line Options
+## Available Scripts
 
-- `--mode`: Run mode (`demo`, `batch`, `scenarios`)
+1. **main.py**: Main system with configurable parameters and animation export
+2. **lightweight_demo.py**: Memory-efficient demo suitable for low-spec systems
+3. **animation_demo.py**: Comprehensive animation generation with multiple scenarios
+4. **real_world_demo.py**: Real-world use case demonstrations
+5. **advanced_test_suite.py**: Advanced testing scenarios
+
+## Command Line Options (main.py)
+
 - `--duration`: Simulation duration in seconds (default: 120)
 - `--view`: Visualization mode (`2d`, `3d`, `multi`)
+- `--mode`: Run mode (`demo`, `quick`)
 - `--output`: Output directory for animations (default: `animations`)
-- `--fps`: Animation frames per second (default: 8)
+
+## System Status
+
+✅ **Fully Operational**: All core components are working and tested
+- ✅ Conflict detection and resolution
+- ✅ Animation generation (GIF format)
+- ✅ Multiple visualization modes (2D, 3D, multi-view)
+- ✅ Real-world scenario demonstrations
+- ✅ Memory-efficient operations for various hardware specs
+- ✅ Comprehensive test coverage
 
 ## Output Files
 
@@ -79,7 +96,6 @@ The system generates several types of output:
 
 ### Animations
 - **GIF files**: High-quality animated visualizations
-- **MP4 files**: Video format animations (requires ffmpeg)
 - **Frame data**: JSON exports of simulation states
 
 ### Reports
@@ -107,9 +123,9 @@ The system generates several types of output:
    - Airspace zone management
 
 4. **Visualization System** (`src/simulation/visualizer.py`)
-   - Real-time and recorded visualization
+   - Animation recording and export
    - Multi-view dashboard capabilities
-   - Animation export functionality
+   - 2D, 3D, and multi-panel visualizations
 
 ## Animation Examples
 

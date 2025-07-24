@@ -2,6 +2,31 @@
 
 A comprehensive UAV (Unmanned Aerial Vehicle) deconfliction system that provides strategic conflict resolution in shared airspace with advanced visualization and animation capabilities.
 
+## Visual Showcase
+
+### 2D Animation Demo
+![2D Showcase Animation](src/animations/demos/showcase/showcase_demo_20250724_173339.gif)
+
+**Features Demonstrated:**
+- Multi-UAV conflict detection and resolution
+- Priority-based deconfliction (Emergency > Medical > Cargo > Patrol > Training)
+- Airspace enforcement with no-fly zones
+- Real-time altitude separation and geometric avoidance
+- Mission execution with automatic conflict resolution
+
+![2D Performance Analysis](src/animations/demos/showcase/simulation_summary_20250724_173436.png)
+
+### 3D Animation Demo
+![3D Showcase Animation](src/animations/demos/showcase_3d/showcase_3d_demo_20250724_173537.gif)
+
+**3D Perspective Features:**
+- Full 3D spatial representation showing altitude layers
+- Vertical separation strategies in action
+- Realistic spatial relationships between UAVs
+- True 3D conflict resolution visualization
+
+![3D Performance Analysis](src/animations/demos/showcase_3d/simulation_summary_20250724_173616.png)
+
 ## Features
 
 - **Strategic Deconfliction**: Real-time conflict detection and resolution for multiple UAVs
@@ -27,6 +52,8 @@ pip install -r requirements.txt
 ```
 
 ## Quick Start
+
+> **🎬 See the system in action!** Check out our [Visual Showcase](#visual-showcase) section below to see real-time conflict resolution animations.
 
 ### Generate Showcase Animations (Recommended)
 
@@ -124,6 +151,8 @@ The system generates several types of output:
    - 2D, 3D, and multi-panel visualizations
 
 ## Animation Examples
+
+> **📺 Live Demonstrations:** See our complete [Visual Showcase](#visual-showcase) above for actual system animations.
 
 The system generates high-quality showcase animations that demonstrate:
 

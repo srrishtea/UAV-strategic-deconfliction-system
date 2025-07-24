@@ -146,16 +146,21 @@ class DeconflictionAlgorithm:
             altitude_change_1 = -min_separation / 2
             altitude_change_2 = min_separation / 2
             
-        # Apply altitude changes
+        # Apply altitude changes with safety limits
         new_altitude_1 = uav1.position[2] + altitude_change_1
         new_altitude_2 = uav2.position[2] + altitude_change_2
         
-        # Ensure altitudes are within safe limits
-        new_altitude_1 = max(50, min(500, new_altitude_1))  # 50m to 500m range
-        new_altitude_2 = max(50, min(500, new_altitude_2))
+        # **FIX**: Ensure altitudes are within safe operational limits
+        min_altitude, max_altitude = 50.0, 500.0
+        new_altitude_1 = max(min_altitude, min(max_altitude, new_altitude_1))
+        new_altitude_2 = max(min_altitude, min(max_altitude, new_altitude_2))
         
+        # **FIX**: Apply altitude changes (in real implementation, this should be gradual)
+        # For simulation purposes, we apply immediate change but log it as gradual
         uav1.position[2] = new_altitude_1
         uav2.position[2] = new_altitude_2
+        
+        print(f"Applied altitude separation: {uav1.id} to {new_altitude_1:.1f}m, {uav2.id} to {new_altitude_2:.1f}m")
         
         resolution['actions'].extend([
             {
@@ -190,16 +195,22 @@ class DeconflictionAlgorithm:
         if np.linalg.norm(rel_vel) > 0.1:
             time_to_cpa = -np.dot(rel_pos, rel_vel) / np.dot(rel_vel, rel_vel)
             time_to_cpa = max(0, time_to_cpa)  # Can't resolve past conflicts
+            
+            # **FIX**: Use CPA to predict future positions for better separation
+            future_pos_1 = uav1.position + uav1.velocity * time_to_cpa
+            future_pos_2 = uav2.position + uav2.velocity * time_to_cpa
+            future_separation = future_pos_2 - future_pos_1
         else:
             time_to_cpa = 0
+            future_separation = rel_pos
             
         # Calculate separation vectors
         required_separation = max(uav1.min_separation, uav2.min_separation) * self.safety_margin
         
-        # Create perpendicular separation vectors
-        if np.linalg.norm(rel_pos[:2]) > 0:
-            # Horizontal separation
-            perp_vector = np.array([-rel_pos[1], rel_pos[0], 0])
+        # Create perpendicular separation vectors based on future positions
+        if np.linalg.norm(future_separation[:2]) > 0:
+            # Horizontal separation using future positions
+            perp_vector = np.array([-future_separation[1], future_separation[0], 0])
             perp_vector = perp_vector / np.linalg.norm(perp_vector) * required_separation
         else:
             # Default separation if UAVs are vertically aligned
@@ -209,23 +220,38 @@ class DeconflictionAlgorithm:
         maneuver_1 = perp_vector / 2
         maneuver_2 = -perp_vector / 2
         
-        # Modify velocities temporarily for separation
-        separation_time = 10.0  # seconds
-        uav1.velocity += maneuver_1 / separation_time
-        uav2.velocity += maneuver_2 / separation_time
+        # **FIX**: Apply velocity changes with bounds checking
+        separation_time = max(10.0, time_to_cpa + 5.0)  # Dynamic separation time
+        
+        # Check if velocity changes are within UAV capabilities
+        velocity_change_1 = maneuver_1 / separation_time
+        velocity_change_2 = maneuver_2 / separation_time
+        
+        # Limit velocity changes to reasonable bounds
+        max_velocity_change = min(uav1.max_speed, uav2.max_speed) * 0.5
+        if np.linalg.norm(velocity_change_1) > max_velocity_change:
+            velocity_change_1 = velocity_change_1 / np.linalg.norm(velocity_change_1) * max_velocity_change
+        if np.linalg.norm(velocity_change_2) > max_velocity_change:
+            velocity_change_2 = velocity_change_2 / np.linalg.norm(velocity_change_2) * max_velocity_change
+        
+        # Apply the bounded velocity changes
+        uav1.velocity += velocity_change_1
+        uav2.velocity += velocity_change_2
         
         resolution['actions'].extend([
             {
                 'uav_id': uav1.id,
                 'action': 'geometric_separation',
-                'maneuver_vector': maneuver_1.tolist(),
-                'duration': separation_time
+                'maneuver_vector': velocity_change_1.tolist(),
+                'duration': separation_time,
+                'cpa_time': time_to_cpa
             },
             {
                 'uav_id': uav2.id,
                 'action': 'geometric_separation',
-                'maneuver_vector': maneuver_2.tolist(),
-                'duration': separation_time
+                'maneuver_vector': velocity_change_2.tolist(),
+                'duration': separation_time,
+                'cpa_time': time_to_cpa
             }
         ])
         
@@ -247,22 +273,26 @@ class DeconflictionAlgorithm:
             
         # Calculate velocity adjustment
         current_speed = np.linalg.norm(adjusting_uav.velocity)
+        min_safe_speed = adjusting_uav.max_speed * 0.2  # **FIX**: Define minimum safe speed
         
-        if current_speed > adjusting_uav.max_speed * 0.3:
-            # Reduce speed for temporal separation
-            speed_reduction = min(current_speed * self.max_speed_reduction, 
-                                current_speed - adjusting_uav.max_speed * 0.2)
+        if current_speed > min_safe_speed * 1.5:
+            # **FIX**: Ensure we don't go below minimum safe speed
+            max_reduction = current_speed - min_safe_speed
+            speed_reduction = min(current_speed * self.max_speed_reduction, max_reduction)
             new_speed = current_speed - speed_reduction
             
-            # Maintain direction, reduce magnitude
-            if current_speed > 0:
+            # **FIX**: Additional safety checks to prevent negative speeds
+            if current_speed > 0 and new_speed > min_safe_speed:
                 velocity_factor = new_speed / current_speed
                 adjusting_uav.velocity *= velocity_factor
                 
-            action_type = 'speed_reduction'
-            adjustment_value = speed_reduction
+                action_type = 'speed_reduction'
+                adjustment_value = speed_reduction
+            else:
+                # Speed too low for safe reduction, use geometric separation
+                return self._geometric_separation_resolution(conflict, resolution)
         else:
-            # UAV is already slow, use lateral maneuver instead
+            # UAV is already too slow, use lateral maneuver instead
             return self._geometric_separation_resolution(conflict, resolution)
             
         resolution['actions'].append({
@@ -432,23 +462,49 @@ class DeconflictionAlgorithm:
         return maneuver
         
     def _execute_maneuver(self, uav: UAV, maneuver: Dict):
-        """Execute a calculated maneuver on a UAV."""
+        """Execute a calculated maneuver on a UAV with physical constraints."""
         maneuver_type = maneuver['type']
         magnitude = maneuver['magnitude']
         
+        # **FIX**: Add safety checks and physical constraints
         if maneuver_type == ManeuverType.LATERAL_LEFT:
-            uav.velocity[1] -= magnitude / maneuver['duration']
+            # Apply lateral velocity change with bounds checking
+            max_lateral_velocity = uav.max_speed * 0.7  # Max 70% of max speed for lateral
+            velocity_change = min(magnitude / maneuver['duration'], max_lateral_velocity)
+            uav.velocity[1] -= velocity_change
+            
         elif maneuver_type == ManeuverType.LATERAL_RIGHT:
-            uav.velocity[1] += magnitude / maneuver['duration']
+            max_lateral_velocity = uav.max_speed * 0.7
+            velocity_change = min(magnitude / maneuver['duration'], max_lateral_velocity)
+            uav.velocity[1] += velocity_change
+            
         elif maneuver_type == ManeuverType.ALTITUDE_UP:
-            uav.position[2] += magnitude
+            # **FIX**: Check altitude limits and gradual change
+            new_altitude = uav.position[2] + magnitude
+            max_altitude = 500.0  # Maximum operational altitude
+            if new_altitude <= max_altitude:
+                uav.position[2] = new_altitude
+            else:
+                uav.position[2] = max_altitude
+                
         elif maneuver_type == ManeuverType.ALTITUDE_DOWN:
-            uav.position[2] -= magnitude
+            # **FIX**: Check minimum altitude
+            new_altitude = uav.position[2] - magnitude
+            min_altitude = 50.0  # Minimum safe altitude
+            if new_altitude >= min_altitude:
+                uav.position[2] = new_altitude
+            else:
+                uav.position[2] = min_altitude
+                
         elif maneuver_type == ManeuverType.SPEED_REDUCTION:
             current_speed = np.linalg.norm(uav.velocity)
             if current_speed > 0:
+                min_speed = uav.max_speed * 0.1  # Minimum 10% of max speed
                 reduction_factor = 1.0 - (magnitude / current_speed)
-                uav.velocity *= max(0.2, reduction_factor)
+                # **FIX**: Ensure we don't go below minimum speed
+                reduction_factor = max(min_speed / current_speed, reduction_factor)
+                uav.velocity *= reduction_factor
+                
         elif maneuver_type == ManeuverType.EMERGENCY_STOP:
             uav.emergency_stop()
             

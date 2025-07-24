@@ -41,7 +41,7 @@ class UAV:
                  uav_type: UAVType,
                  initial_position: Tuple[float, float, float],
                  max_speed: float = 15.0,
-                 min_separation: float = 50.0,
+                 min_separation: float = 100.0,  # Increased minimum separation
                  priority: int = 1):
         """
         Initialize a UAV instance.
@@ -69,6 +69,11 @@ class UAV:
         self.waypoints = []  # List of waypoints to visit
         self.current_waypoint_index = 0
         self.mission_complete = False
+        
+        # Conflict resolution state
+        self.in_conflict_resolution = False
+        self.conflict_resolution_timer = 0.0
+        self.avoidance_velocity = None
         
         # Status and safety
         self.status = UAVStatus.IDLE
@@ -105,8 +110,19 @@ class UAV:
         Args:
             dt: Time step in seconds
         """
-        if self.status == UAVStatus.MISSION and not self.emergency_landing:
-            # Move towards current waypoint
+        # If in conflict resolution, use avoidance velocity and countdown timer
+        if self.in_conflict_resolution:
+            if self.avoidance_velocity is not None:
+                self.velocity = self.avoidance_velocity
+            
+            self.conflict_resolution_timer -= dt
+            if self.conflict_resolution_timer <= 0:
+                self.in_conflict_resolution = False
+                self.avoidance_velocity = None
+                print(f"🔄 {self.id} exiting conflict resolution mode")
+        
+        elif self.status == UAVStatus.MISSION and not self.emergency_landing:
+            # Normal mission operation - move towards current waypoint
             target = self.get_current_target()
             if target is not None:
                 # Calculate direction to target
@@ -132,6 +148,19 @@ class UAV:
         # Update heading based on velocity
         if np.linalg.norm(self.velocity[:2]) > 0.1:  # If moving horizontally
             self.heading = np.degrees(np.arctan2(self.velocity[1], self.velocity[0]))
+            
+    def enter_conflict_resolution(self, avoidance_velocity: np.ndarray, duration: float = 10.0):
+        """
+        Put UAV into conflict resolution mode with specific avoidance velocity.
+        
+        Args:
+            avoidance_velocity: Velocity vector to use for avoidance
+            duration: How long to maintain avoidance (seconds)
+        """
+        self.in_conflict_resolution = True
+        self.avoidance_velocity = avoidance_velocity
+        self.conflict_resolution_timer = duration
+        print(f"🚨 {self.id} entering conflict resolution mode for {duration}s")
             
     def get_predicted_position(self, time_ahead: float) -> np.ndarray:
         """

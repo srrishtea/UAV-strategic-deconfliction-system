@@ -250,18 +250,17 @@ class SimulationEnvironment:
         
     def _simulation_step(self):
         """Execute one optimized simulation time step."""
+        # Check and enforce airspace restrictions BEFORE movement
+        self._enforce_airspace_restrictions()
+        
         # Apply environmental effects (simplified)
         self._apply_environmental_effects()
         
         # Update fleet (includes conflict detection and resolution)
         self.fleet_manager.update_fleet(self.time_step)
         
-        # Handle conflicts with optimized algorithms
-        self._handle_conflicts_optimized()
-        
-        # Check airspace violations (less frequently)
-        if int(self.current_time) % 5 == 0:  # Check every 5 seconds
-            self._check_airspace_violations()
+        # Handle conflicts with PROPER algorithms (not simplified)
+        self._handle_conflicts_properly()
         
         # Update metrics
         self._update_metrics()
@@ -283,69 +282,79 @@ class SimulationEnvironment:
                 elif self.weather in [WeatherCondition.HEAVY_WIND, WeatherCondition.STORM]:
                     uav.velocity *= 0.9  # 10% speed reduction
                         
-    def _handle_conflicts_optimized(self):
-        """Handle conflicts using optimized algorithms."""
+    def _handle_conflicts_properly(self):
+        """Handle conflicts using PROPER algorithms (not simplified)."""
         conflicts = self.fleet_manager.conflicts
         
-        # Limit conflict processing for performance
-        max_conflicts_per_step = 3
-        conflicts_to_process = conflicts[:max_conflicts_per_step]
-        
-        for conflict in conflicts_to_process:
-            # Use simplified resolution strategy
-            resolution = self._resolve_conflict_simple(conflict)
+        for conflict in conflicts:
+            # Use the REAL deconfliction algorithms we wrote
+            if conflict.severity == "CRITICAL":
+                strategy = DeconflictionStrategy.EMERGENCY_AVOIDANCE
+            elif conflict.time_to_conflict < 10.0:
+                strategy = DeconflictionStrategy.ALTITUDE_LAYERING
+            else:
+                strategy = DeconflictionStrategy.GEOMETRIC_SEPARATION
+                
+            # Apply REAL conflict resolution
+            resolution = self.deconfliction_algorithm.resolve_conflict(conflict, strategy)
             
             # Update metrics
             if resolution['success']:
                 self.metrics['resolved_conflicts'] += 1
+                print(f"Resolved {conflict.severity} conflict between {conflict.uav1.id} and {conflict.uav2.id}")
             else:
                 self.metrics['failed_resolutions'] += 1
+                print(f"FAILED to resolve conflict between {conflict.uav1.id} and {conflict.uav2.id}")
                 
-    def _resolve_conflict_simple(self, conflict):
-        """Simplified conflict resolution for better performance."""
-        uav1, uav2 = conflict.uav1, conflict.uav2
-        
-        # Simple priority-based resolution
-        if uav1.priority < uav2.priority:  # Lower number = higher priority
-            # Move lower priority UAV slightly
-            avoidance_vector = np.array([50.0, 50.0, 10.0])  # Simple avoidance
-            uav2.position += avoidance_vector
-        elif uav2.priority < uav1.priority:
-            avoidance_vector = np.array([-50.0, -50.0, 10.0])
-            uav1.position += avoidance_vector
-        else:
-            # Same priority - simple altitude separation
-            uav1.position[2] += 25.0
-            uav2.position[2] -= 25.0
-            
-        return {
-            'conflict_id': f"{uav1.id}-{uav2.id}",
-            'strategy': 'simple_avoidance',
-            'success': True,
-            'actions': ['position_adjustment']
-        }
-                
-    def _check_airspace_violations(self):
-        """Optimized airspace violation checking."""
+    def _enforce_airspace_restrictions(self):
+        """PREVENT UAVs from entering restricted airspace."""
         for uav in self.fleet_manager.uavs.values():
             for zone_id, zone in self.airspace_zones.items():
-                if self._is_uav_in_zone(uav, zone):
+                # Check if UAV will violate airspace in next step
+                future_position = uav.position + uav.velocity * self.time_step
+                
+                if self._is_position_in_zone(future_position, zone):
                     if zone['type'] in [AirspaceZone.RESTRICTED, AirspaceZone.NO_FLY]:
-                        zone['violations'] += 1
+                        # STOP the UAV from entering
+                        print(f"⚠️ PREVENTING {uav.id} from entering {zone['type'].value} zone")
+                        
+                        # Calculate avoidance direction
+                        zone_center = np.array([
+                            (zone['bounds'][0] + zone['bounds'][1]) / 2,
+                            (zone['bounds'][2] + zone['bounds'][3]) / 2,
+                            (zone['altitude_range'][0] + zone['altitude_range'][1]) / 2
+                        ])
+                        
+                        # Move UAV away from zone center
+                        avoidance_direction = uav.position - zone_center
+                        if np.linalg.norm(avoidance_direction) > 0:
+                            avoidance_direction = avoidance_direction / np.linalg.norm(avoidance_direction)
+                            # Strong avoidance velocity
+                            uav.velocity = avoidance_direction * uav.max_speed * 0.8
+                        
                         self.metrics['safety_violations'] += 1
                         
-                        # Simple priority escalation
-                        uav.priority = max(0, uav.priority - 1)
-                        
-    def _is_uav_in_zone(self, uav: UAV, zone: Dict) -> bool:
-        """Optimized zone checking."""
+    def _is_position_in_zone(self, position: np.ndarray, zone: Dict) -> bool:
+        """Check if position is inside a zone."""
         bounds = zone['bounds']
         alt_range = zone['altitude_range']
-        pos = uav.position
         
-        return (bounds[0] <= pos[0] <= bounds[1] and
-                bounds[2] <= pos[1] <= bounds[3] and
-                alt_range[0] <= pos[2] <= alt_range[1])
+        return (bounds[0] <= position[0] <= bounds[1] and
+                bounds[2] <= position[1] <= bounds[3] and
+                alt_range[0] <= position[2] <= alt_range[1])
+                
+    def _check_airspace_violations(self):
+        """Check for airspace violations (for logging only - prevention happens in _enforce_airspace_restrictions)."""
+        for uav in self.fleet_manager.uavs.values():
+            for zone_id, zone in self.airspace_zones.items():
+                if self._is_position_in_zone(uav.position, zone):
+                    if zone['type'] in [AirspaceZone.RESTRICTED, AirspaceZone.NO_FLY]:
+                        zone['violations'] += 1
+                        print(f"❌ VIOLATION: {uav.id} is in {zone['type'].value} zone!")
+                        
+    def _is_uav_in_zone(self, uav: UAV, zone: Dict) -> bool:
+        """Check if UAV is in zone (kept for compatibility)."""
+        return self._is_position_in_zone(uav.position, zone)
                 
     def _update_metrics(self):
         """Update simulation metrics efficiently."""

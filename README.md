@@ -6,10 +6,10 @@ A comprehensive UAV (Unmanned Aerial Vehicle) deconfliction system that provides
 
 - **Strategic Deconfliction**: Real-time conflict detection and resolution for multiple UAVs
 - **4D Simulation**: 3D spatial coordinates + time dimension for comprehensive analysis
-- **Advanced Visualization**: 2D, 3D, and multi-view dashboard visualizations
-- **Animation Export**: High-quality GIF and MP4 animation generation
+- **Advanced Visualization**: 2D and 3D animation visualizations
+- **Animation Export**: High-quality GIF animation generation
 - **Multiple UAV Types**: Support for quadcopters, fixed-wing, helicopters, and VTOL aircraft
-- **Airspace Management**: No-fly zones, restricted areas, and controlled airspace
+- **Airspace Management**: No-fly zones, restricted areas, and controlled airspace enforcement
 - **Priority-based Resolution**: Mission-type based priority system for conflict resolution
 - **Performance Metrics**: Comprehensive simulation analytics and reporting
 
@@ -26,40 +26,37 @@ cd UAV-strategic-deconfliction-system
 pip install -r requirements.txt
 ```
 
-3. For MP4 export (optional):
-```bash
-# Install ffmpeg for MP4 animation export
-# On Ubuntu/Debian:
-sudo apt-get install ffmpeg
-
-# On macOS:
-brew install ffmpeg
-
-# On Windows:
-# Download from https://ffmpeg.org/download.html
-```
-
 ## Quick Start
 
-### Basic Demo with Animation Export
+### Generate Showcase Animations (Recommended)
+
+**2D Showcase Animation** - Comprehensive multi-UAV scenario with conflict resolution:
+```bash
+cd src
+python animation_demo.py
+```
+This generates:
+- `animations/demos/showcase/showcase_demo_*.gif` - 2D visualization with multiple UAVs, conflicts, and airspace zones
+- `animations/demos/showcase/simulation_summary_*.png` - Performance analysis charts
+
+**3D Showcase Animation** - Same scenario in 3D perspective:
+```bash
+cd src
+python animation_demo.py
+```
+This generates:
+- `animations/demos/showcase_3d/showcase_3d_demo_*.gif` - 3D visualization showing altitude separation
+- `animations/demos/showcase_3d/simulation_summary_*.png` - 3D performance metrics
+
+### Other Demos
+
+**Basic System Demo**:
 ```bash
 cd src
 python main.py --duration 60 --view 2d
 ```
 
-### Lightweight Demo (Memory Efficient)
-```bash
-cd src
-python lightweight_demo.py
-```
-
-### High-Quality Animation Demo
-```bash
-cd src
-python animation_demo.py
-```
-
-### Real-World Scenarios Demo
+**Real-World Scenarios Demo**:
 ```bash
 cd src
 python real_world_demo.py
@@ -67,27 +64,25 @@ python real_world_demo.py
 
 ## Available Scripts
 
-1. **main.py**: Main system with configurable parameters and animation export
-2. **lightweight_demo.py**: Memory-efficient demo suitable for low-spec systems
-3. **animation_demo.py**: Comprehensive animation generation with multiple scenarios
-4. **real_world_demo.py**: Real-world use case demonstrations
-5. **advanced_test_suite.py**: Advanced testing scenarios
+1. **animation_demo.py**: 🎬 **Primary Demo** - Generates high-quality showcase animations in both 2D and 3D
+2. **main.py**: Basic system with configurable parameters and animation export
+3. **real_world_demo.py**: Real-world use case demonstrations (terminal output only)
+4. **advanced_test_suite.py**: Advanced testing scenarios
 
 ## Command Line Options (main.py)
 
 - `--duration`: Simulation duration in seconds (default: 120)
-- `--view`: Visualization mode (`2d`, `3d`, `multi`)
-- `--mode`: Run mode (`demo`, `quick`)
-- `--output`: Output directory for animations (default: `animations`)
+- `--view`: Visualization mode (`2d`, `3d`)
+- `--mode`: Run mode (optional for different scenarios)
 
 ## System Status
 
 ✅ **Fully Operational**: All core components are working and tested
 - ✅ Conflict detection and resolution
 - ✅ Animation generation (GIF format)
-- ✅ Multiple visualization modes (2D, 3D, multi-view)
+- ✅ Multiple visualization modes (2D and 3D)
 - ✅ Real-world scenario demonstrations
-- ✅ Memory-efficient operations for various hardware specs
+- ✅ Airspace enforcement and no-fly zone management
 - ✅ Comprehensive test coverage
 
 ## Output Files
@@ -95,13 +90,14 @@ python real_world_demo.py
 The system generates several types of output:
 
 ### Animations
-- **GIF files**: High-quality animated visualizations
+- **GIF files**: High-quality animated visualizations showing UAV deconfliction in action
+  - `animations/demos/showcase/showcase_demo_*.gif` - 2D comprehensive scenario
+  - `animations/demos/showcase_3d/showcase_3d_demo_*.gif` - 3D perspective view
 - **Frame data**: JSON exports of simulation states
 
 ### Reports
-- **Summary plots**: Comprehensive performance analysis charts
-- **Simulation data**: Detailed JSON exports for further analysis
-- **Performance metrics**: Conflict resolution statistics and mission completion rates
+- **Summary plots**: Comprehensive performance analysis charts with conflict resolution metrics
+- **Simulation data**: Detailed exports showing UAV trajectories, conflicts detected/resolved, and mission completion rates
 
 ## System Architecture
 
@@ -129,24 +125,29 @@ The system generates several types of output:
 
 ## Animation Examples
 
-The system generates several types of animations:
+The system generates high-quality showcase animations that demonstrate:
 
-### 2D Top-Down View
-- Clear visualization of UAV positions and movements
-- Conflict highlighting with red lines
-- Airspace zones displayed as colored rectangles
-- UAV trails showing historical paths
+### 2D Showcase Animation (`animations/demos/showcase/`)
+- ✅ **Multi-UAV Operations**: 7 UAVs with different mission types and priorities
+- ✅ **Conflict Resolution**: Real-time altitude separation and geometric avoidance
+- ✅ **Airspace Management**: No-fly zones and restricted areas with enforcement
+- ✅ **Mission Execution**: UAVs navigating to waypoints while avoiding conflicts
+- ✅ **Visual Clarity**: Clear representation of UAV positions, trails, conflicts, and zones
 
-### 3D Spatial View
-- Full 3D representation of airspace
-- Altitude-based conflict analysis
-- Realistic spatial relationships
+### 3D Showcase Animation (`animations/demos/showcase_3d/`)
+- ✅ **3D Spatial View**: Full 3D representation showing altitude-based conflict resolution
+- ✅ **Realistic Perspective**: True spatial relationships between UAVs
+- ✅ **Altitude Layering**: Visual demonstration of vertical separation strategies
+- ✅ **Performance Metrics**: Real-time statistics and conflict resolution indicators
 
-### Multi-View Dashboard
-- Combined 2D view with metrics panels
-- Real-time performance indicators
-- Conflict timeline visualization
-- Altitude distribution charts
+Both animations show the same complex scenario with:
+- **Emergency Response UAV** (highest priority)
+- **Medical Delivery UAVs** (high priority) 
+- **Cargo Delivery UAVs** (medium priority)
+- **Patrol UAVs** (medium priority)
+- **Training UAVs** (lowest priority)
+
+The animations demonstrate automatic conflict detection, priority-based resolution, and successful mission completion without collisions.
 
 ## Conflict Resolution Strategies
 

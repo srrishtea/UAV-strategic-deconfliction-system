@@ -30,53 +30,74 @@ except ImportError as e:
 
 def create_sample_scenario() -> SimulationEnvironment:
     """
-    Create a sample scenario with multiple UAVs and potential conflicts.
+    Create a comprehensive scenario with multiple UAVs and realistic conflicts.
     
     Returns:
         Configured simulation environment
     """
-    print("🚁 Creating sample UAV deconfliction scenario...")
+    print("🚁 Creating comprehensive UAV deconfliction scenario...")
     
-    # Create simulation environment with optimized settings
+    # Create simulation environment with proper size for interesting movements
     sim_env = SimulationEnvironment(
-        bounds=(-800, 800, -800, 800),  # Smaller area for faster processing
-        altitude_limits=(50, 200),
-        time_step=2.0  # Larger time step for faster simulation
+        bounds=(-1000, 1000, -1000, 1000),  # Larger area for better visualization
+        altitude_limits=(50, 300),
+        time_step=1.5  # Slightly larger time step for smoother animation
     )
     
-    # Add fewer airspace restrictions for faster processing
+    # Add meaningful airspace restrictions
     sim_env.add_airspace_zone(
-        "NO_FLY_ZONE", 
+        "AIRPORT_NFZ", 
         AirspaceZone.NO_FLY,
-        (-150, 150, -150, 150),
-        (0, 300)
+        (-200, 200, -200, 200),
+        (0, 400)
     )
     
-    # Set weather conditions
-    sim_env.set_weather(WeatherCondition.CLEAR, wind_speed=2.0, wind_direction=45.0)
+    sim_env.add_airspace_zone(
+        "HOSPITAL_RESTRICTED", 
+        AirspaceZone.RESTRICTED,
+        (400, 600, 400, 600),
+        (50, 200)
+    )
     
-    # Simplified UAV scenarios for faster processing
+    # Set weather conditions for realism
+    sim_env.set_weather(WeatherCondition.LIGHT_WIND, wind_speed=3.0, wind_direction=45.0)
+    
+    # Create diverse UAV scenarios with interesting crossing patterns
     uav_scenarios = [
         {
-            'id': 'UAV-1',
-            'type': UAVType.QUADCOPTER,
-            'position': (-600, -600, 100),
-            'mission': MissionType.MEDICAL_DELIVERY,
-            'waypoints': [(600, 600, 100)]
-        },
-        {
-            'id': 'UAV-2', 
-            'type': UAVType.FIXED_WING,
-            'position': (600, -600, 120),
-            'mission': MissionType.CARGO_DELIVERY,
-            'waypoints': [(-600, 600, 120)]
-        },
-        {
-            'id': 'UAV-3',
+            'id': 'RESCUE-01',
             'type': UAVType.HELICOPTER,
-            'position': (0, -700, 150),
+            'position': (-800, -800, 120),
             'mission': MissionType.EMERGENCY_RESPONSE,
-            'waypoints': [(0, 700, 150)]
+            'waypoints': [(800, 800, 120), (600, -600, 120)]
+        },
+        {
+            'id': 'MEDICAL-01', 
+            'type': UAVType.QUADCOPTER,
+            'position': (800, -800, 100),
+            'mission': MissionType.MEDICAL_DELIVERY,
+            'waypoints': [(-800, 800, 100), (-600, 600, 100)]
+        },
+        {
+            'id': 'CARGO-01',
+            'type': UAVType.FIXED_WING,
+            'position': (-600, 600, 150),
+            'mission': MissionType.CARGO_DELIVERY,
+            'waypoints': [(600, -600, 150), (800, -200, 150)]
+        },
+        {
+            'id': 'PATROL-01',
+            'type': UAVType.VTOL,
+            'position': (0, -900, 180),
+            'mission': MissionType.PATROL,
+            'waypoints': [(0, 900, 180), (300, 600, 180), (-300, 600, 180)]
+        },
+        {
+            'id': 'CARGO-02',
+            'type': UAVType.QUADCOPTER,
+            'position': (600, 0, 90),
+            'mission': MissionType.CARGO_DELIVERY,
+            'waypoints': [(-600, 0, 90), (-800, -200, 90)]
         }
     ]
     
@@ -94,7 +115,10 @@ def create_sample_scenario() -> SimulationEnvironment:
         else:
             print(f"  ✗ Failed to add {scenario['id']}")
     
-    print(f"📊 Scenario created with {len(sim_env.fleet_manager.uavs)} UAVs")
+    print(f"📊 Comprehensive scenario created with {len(sim_env.fleet_manager.uavs)} UAVs")
+    print("   - Multiple crossing flight paths for realistic conflicts")
+    print("   - No-fly zones and restricted areas")
+    print("   - Diverse UAV types and mission priorities")
     return sim_env
 
 
@@ -251,8 +275,8 @@ def main():
     parser = argparse.ArgumentParser(description="UAV Deconfliction System - Optimized Animation Export")
     parser.add_argument('--mode', choices=['demo', 'quick', 'scenarios'], default='demo',
                        help='Run mode: demo (single), quick (fast batch), or scenarios (quick demos)')
-    parser.add_argument('--duration', type=float, default=30.0,
-                       help='Simulation duration in seconds (default: 30)')
+    parser.add_argument('--duration', type=float, default=90.0,
+                       help='Simulation duration in seconds (default: 90)')
     parser.add_argument('--view', choices=['2d', '3d', 'multi'], default='2d',
                        help='Visualization mode (default: 2d)')
     parser.add_argument('--output', type=str, default='animations',

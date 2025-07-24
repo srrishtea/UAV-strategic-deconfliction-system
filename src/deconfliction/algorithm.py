@@ -50,10 +50,10 @@ class DeconflictionAlgorithm:
     """
     
     def __init__(self):
-        self.safety_margin = 1.5  # Safety multiplier for separation distances
-        self.max_altitude_change = 100.0  # meters
+        self.safety_margin = 3.0  # Increased safety multiplier for separation distances
+        self.max_altitude_change = 150.0  # Increased altitude change capability
         self.max_speed_reduction = 0.5  # 50% of max speed
-        self.loiter_radius = 30.0  # meters
+        self.loiter_radius = 50.0  # Increased loiter radius
         self.resolution_history = []  # Track past resolutions
         
     def resolve_conflict(self, conflict: ConflictInfo, strategy: DeconflictionStrategy) -> Dict:
@@ -115,6 +115,10 @@ class DeconflictionAlgorithm:
         # Calculate optimal avoidance maneuver
         maneuver = self._calculate_optimal_maneuver(avoiding_uav, priority_uav, conflict)
         self._execute_maneuver(avoiding_uav, maneuver)
+        
+        # Put avoiding UAV in conflict resolution mode to prevent waypoint override
+        if avoiding_uav.velocity is not None:
+            avoiding_uav.enter_conflict_resolution(avoiding_uav.velocity.copy(), duration=15.0)
         
         resolution['actions'].append({
             'uav_id': avoiding_uav.id,

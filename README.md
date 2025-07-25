@@ -8,15 +8,15 @@
 
 A sophisticated UAV (Unmanned Aerial Vehicle) deconfliction system designed for strategic conflict resolution in shared airspace environments. Features advanced visualization capabilities, priority-based mission management, and comprehensive safety protocols for enterprise-grade UAV fleet operations.
 
-## 🎯 Key Features
+## Key Features
 
 ### Core Capabilities
-- **🔍 Real-Time Conflict Detection** - Advanced algorithms for 4D spatial-temporal conflict identification
-- **⚡ Strategic Resolution** - Priority-based deconfliction with multiple resolution strategies  
-- **🎮 Advanced Visualization** - High-quality 2D/3D animations with export capabilities
-- **📊 Performance Analytics** - Comprehensive metrics tracking and reporting
-- **🛡️ Safety Protocols** - Airspace enforcement with no-fly zones and altitude restrictions
-- **🚀 Scalable Architecture** - Designed for enterprise deployment with thousands of UAVs
+- **Real-Time Conflict Detection** - Advanced algorithms for 4D spatial-temporal conflict identification
+- **Strategic Resolution** - Priority-based deconfliction with multiple resolution strategies  
+- **Advanced Visualization** - High-quality 2D/3D animations with export capabilities
+- **Performance Analytics** - Comprehensive metrics tracking and reporting
+- **Safety Protocols** - Airspace enforcement with no-fly zones and altitude restrictions
+- **Scalable Architecture** - Designed for enterprise deployment with thousands of UAVs
 
 ### Supported UAV Types
 - **Quadcopters** - Standard multi-rotor platforms
@@ -25,18 +25,17 @@ A sophisticated UAV (Unmanned Aerial Vehicle) deconfliction system designed for 
 - **VTOL Aircraft** - Vertical takeoff/landing hybrid platforms
 
 ### Mission Priority System
-1. **🚨 Emergency Response** (Critical Priority)
-2. **🏥 Medical Delivery** (High Priority) 
-3. **📦 Cargo Transport** (Medium Priority)
-4. **👮 Patrol Operations** (Medium Priority)
-5. **🎓 Training Missions** (Low Priority)
+1. **Emergency Response** (Critical Priority)
+2. **Medical Delivery** (High Priority) 
+3. **Cargo Transport** (Medium Priority)
+4. **Patrol Operations** (Medium Priority)
+5. **Training Missions** (Low Priority)
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Python 3.8 or higher
 - Windows/macOS/Linux operating system
-- 4GB RAM minimum (8GB recommended for large simulations)
 
 ### Installation
 
@@ -51,17 +50,11 @@ cd UAV-strategic-deconfliction-system
 pip install -r requirements.txt
 ```
 
-3. **Verify installation:**
-```powershell
-cd src
-python main.py --mode quick --duration 30 --view 2d
-```
-
 ## 📋 Usage Commands
 
 ### Primary Demonstration Scripts
 
-#### 🎬 **Showcase Animation (Recommended)**
+#### **Showcase Animation (Recommended)**
 Generate high-quality demonstration animations showcasing the full system capabilities:
 
 ```powershell
@@ -86,12 +79,8 @@ python main.py --mode demo --duration 120 --view 3d
 cd src
 python main.py --mode demo --duration 60 --view multi
 
-# Quick test scenario (30 seconds)
-cd src
-python main.py --mode quick --duration 30 --view 2d
-```
 
-#### 🌍 **Real-World Scenarios**
+####  **Real-World Scenarios**
 Run practical use-case demonstrations:
 
 ```powershell
@@ -99,7 +88,7 @@ cd src
 python real_world_demo.py
 ```
 
-#### 🧪 **Advanced Testing**
+####  **Advanced Testing**
 Comprehensive test suite for system validation:
 
 ```powershell
@@ -132,7 +121,7 @@ cd src
 python main.py --mode scenarios --duration 180 --view multi
 ```
 
-## 🏗️ System Architecture
+##  System Architecture
 
 ### Component Overview
 
@@ -158,13 +147,13 @@ UAV Deconfliction System
 
 ### Conflict Resolution Strategies
 
-1. **🔺 Altitude Separation** - Vertical spacing between UAVs
-2. **⏰ Temporal Separation** - Time-based conflict avoidance  
-3. **🛤️ Path Deviation** - Intelligent route modification
-4. **🏃 Speed Adjustment** - Dynamic velocity optimization
-5. **⚡ Priority Override** - Emergency mission precedence
+1. **Altitude Separation** - Vertical spacing between UAVs
+2. **Temporal Separation** - Time-based conflict avoidance  
+3. **Path Deviation** - Intelligent route modification
+4. **Speed Adjustment** - Dynamic velocity optimization
+5. **Priority Override** - Emergency mission precedence
 
-## 📈 Performance Metrics
+## Performance Metrics
 
 The system tracks comprehensive operational indicators:
 
@@ -199,7 +188,7 @@ animations/
 - **📋 JSON Reports** - Simulation data and trajectory information
 - **📈 Summary Plots** - Conflict resolution and mission completion analysis
 
-## 🔧 Configuration
+##  Configuration
 
 ### Environment Settings
 - **Airspace Bounds** - Configurable simulation area (-1000m to +1000m default)
@@ -213,7 +202,37 @@ animations/
 - **Performance Parameters** - Speed, maneuverability, and payload settings
 - **Communication Range** - Inter-UAV coordination distance
 
-## 🌟 Enterprise Scalability
+##  Enterprise Scalability
+---
+
+##  Visual Demonstrations
+  ### 3D Perspective Animation  
+![3D Showcase Animation](src/animations/demos/showcase_3d/showcase_3d_demo_20250724_173537.gif)
+
+**3D Visualization Features:**
+- Complete 3D spatial representation with altitude layering
+- Vertical separation strategies in dynamic environments
+- Realistic spatial relationships and conflict geometry
+- True 3D conflict resolution with multi-axis avoidance
+
+![3D Performance Analysis](src/animations/demos/showcase_3d/simulation_summary_20250724_173616.png)
+
+
+
+### 2D Showcase Animation
+![2D Showcase Animation](src/animations/demos/showcase/showcase_demo_20250724_173339.gif)
+
+**Demonstrated Capabilities:**
+- Multi-UAV conflict detection and resolution in real-time
+- Priority-based deconfliction with emergency override scenarios
+- Airspace enforcement with no-fly zones and restricted areas
+- Mission execution with automatic conflict avoidance
+- Performance metrics and safety compliance monitoring
+
+![2D Performance Analysis](src/animations/demos/showcase/simulation_summary_20250724_173436.png)
+
+
+---
 
 ### Production Deployment Considerations
 
@@ -250,13 +269,6 @@ animations/
 - **Edge Case Handling** - Boundary condition and failure mode testing
 - **Performance Validation** - Scalability and efficiency metrics
 
-## 📊 Technical Specifications
-
-### System Requirements
-- **Memory Usage** - 2-8GB depending on fleet size
-- **Processing Power** - Multi-core CPU recommended for real-time processing
-- **Storage** - 1GB for animations and logs (scalable)
-- **Network** - Low latency required for real-time UAV coordination
 
 ### Performance Benchmarks
 - **Conflict Detection** - Sub-second response for 50+ UAV scenarios
@@ -264,7 +276,7 @@ animations/
 - **Animation Export** - 30-60 seconds for 2-minute simulations
 - **Scalability** - Tested up to 100 UAVs in simulation environment
 
-## 🤝 Development & Support
+##  Development & Support
 
 ### Contributing
 1. Fork the repository on GitHub
@@ -283,34 +295,7 @@ animations/
 - **Issue Tracking** - GitHub Issues for bug reports and feature requests  
 - **Community** - Active development and user community
 
----
 
-## 🎥 Visual Demonstrations
-
-### 2D Showcase Animation
-![2D Showcase Animation](src/animations/demos/showcase/showcase_demo_20250724_173339.gif)
-
-**Demonstrated Capabilities:**
-- Multi-UAV conflict detection and resolution in real-time
-- Priority-based deconfliction with emergency override scenarios
-- Airspace enforcement with no-fly zones and restricted areas
-- Mission execution with automatic conflict avoidance
-- Performance metrics and safety compliance monitoring
-
-![2D Performance Analysis](src/animations/demos/showcase/simulation_summary_20250724_173436.png)
-
-### 3D Perspective Animation  
-![3D Showcase Animation](src/animations/demos/showcase_3d/showcase_3d_demo_20250724_173537.gif)
-
-**3D Visualization Features:**
-- Complete 3D spatial representation with altitude layering
-- Vertical separation strategies in dynamic environments
-- Realistic spatial relationships and conflict geometry
-- True 3D conflict resolution with multi-axis avoidance
-
-![3D Performance Analysis](src/animations/demos/showcase_3d/simulation_summary_20250724_173616.png)
-
----
 
 **© 2025 UAV Strategic Deconfliction System | Developed for FlytBase Robotics Assignment**
 
